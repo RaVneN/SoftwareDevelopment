@@ -71,35 +71,35 @@
 
 
             if (tiles[0].innerHTML == tiles[1].innerHTML && tiles[1].innerHTML == tiles[2].innerHTML && tiles[0].innerHTML != "") {
-                gameOver(tiles[0]);
+                gameOver(tiles[0], [0, 1, 2]);
                 alert("1" + tiles[0].innerHTML);
                 return true;
             } else if (tiles[3].innerHTML == tiles[4].innerHTML && tiles[4].innerHTML == tiles[5].innerHTML && tiles[3].innerHTML != "") {
-                gameOver(tiles[3]);
+                gameOver(tiles[3], [3, 4, 5]);
                 alert("2" + tiles[3].innerHTML);
                 return true;
             } else if (tiles[6].innerHTML == tiles[7].innerHTML && tiles[7].innerHTML == tiles[8].innerHTML && tiles[6].innerHTML != "") {
-                gameOver(tiles[6]);
+                gameOver(tiles[6], [6, 7, 8]);
                 alert("3" + tiles[6].innerHTML);
                 return true;
             } else if (tiles[0].innerHTML == tiles[3].innerHTML && tiles[3].innerHTML == tiles[6].innerHTML && tiles[0].innerHTML != "") {
-                gameOver(tiles[0]);
+                gameOver(tiles[0], [0, 3, 6]);
                 alert("4" + tiles[0].innerHTML);
                 return true;
             } else if (tiles[1].innerHTML == tiles[4].innerHTML && tiles[4].innerHTML == tiles[7].innerHTML && tiles[1].innerHTML != "") {
-                gameOver(tiles[1]);
+                gameOver(tiles[1], [1, 4, 7]);
                 alert("5" + tiles[1].innerHTML);
                 return true;
             } else if (tiles[2].innerHTML == tiles[5].innerHTML && tiles[5].innerHTML == tiles[8].innerHTML && tiles[2].innerHTML != "") {
-                gameOver(tiles[2]);
+                gameOver(tiles[2], [2, 5, 8]);
                 alert("6" + tiles[2].innerHTML);
                 return true;
             } else if (tiles[0].innerHTML == tiles[4].innerHTML && tiles[4].innerHTML == tiles[8].innerHTML && tiles[0].innerHTML != "") {
-                gameOver(tiles[0]);
+                gameOver(tiles[0], [0, 4, 8]);
                 alert("7" + tiles[0].innerHTML);
                 return true;
             } else if (tiles[2].innerHTML == tiles[4].innerHTML && tiles[4].innerHTML == tiles[6].innerHTML && tiles[2].innerHTML != "") {
-                gameOver(tiles[2]);
+                gameOver(tiles[2], [2, 4, 6]);
                 alert(tiles[2]);
                 alert("8" + tiles[2].innerHTML);
                 return true;
@@ -111,15 +111,19 @@
             var tiles = document.getElementsByClassName('cell');
             for (let i = 0; i < tiles.length; i++) {
                 tiles[i].innerHTML = "";
+                tiles[i].style.backgroundColor = "";
             }
             document.getElementById('Message').innerHTML = "";
             gameover = false;
         }
 
-        function gameOver(objTile) {
+        function gameOver(objTile, cell_array) {
             //           var tiles = document.getElementsByClassName('cell');
             document.getElementById('Message').innerHTML = "Winner is: " + objTile.innerHTML;
             gameover = true;
+            for (i = 0; i < cell_array.length; i++) {
+                tiles[cell_array[i]].style.backgroundColor = "lightgreen";
+            }
         }
 
         function drawGame() {
