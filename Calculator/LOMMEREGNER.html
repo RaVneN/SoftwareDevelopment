@@ -1,37 +1,5 @@
 <!DOCTYPE html>
 <html>
-<script data-dapp-detection="">
-    ! function() {
-        let e = !1;
-
-        function n() {
-            if (!e) {
-                const n = document.createElement("meta");
-                n.name = "dapp-detected", document.head.appendChild(n), e = !0
-            }
-        }
-        if (window.hasOwnProperty("ethereum")) {
-            if (window.__disableDappDetectionInsertion = !0, void 0 === window.ethereum) return;
-            n()
-        } else {
-            var t = window.ethereum;
-            Object.defineProperty(window, "ethereum", {
-                configurable: !0,
-                enumerable: !1,
-                set: function(e) {
-                    window.__disableDappDetectionInsertion || n(), t = e
-                },
-                get: function() {
-                    if (!window.__disableDappDetectionInsertion) {
-                        const e = arguments.callee;
-                        e && e.caller && e.caller.toString && -1 !== e.caller.toString().indexOf("getOwnPropertyNames") || n()
-                    }
-                    return t
-                }
-            })
-        }
-    }();
-</script>
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -82,102 +50,65 @@
             text-align: center;
             font-family: 'Consolas';
             text-align: right;
-            overflow: auto;
+            overflow: hidden;
         }
     </style>
     <script>
-        function clicked(obj) {
-            alert(obj + " Has been clicked");
+        document.addEventListener('DOMContentLoaded',
+            function() {
+                clearAll();
+            });
+
+        function clearAll() {
+            document.getElementById('display').innerHTML = '0';
+            document.getElementById('historycontent').innerHTML = "";
+        }
+
+        function l2h(strText) {
+            document.getElementById("historycontent").innerHTML += strText + "<br/>";
+            document.getElementById("historycontent").scrollTop = document.getElementById("historycontent").scrollHeight;
         }
     </script>
     <script>
-        function lti_launch(vars, target) {
-            var query = '';
-            var new_tab = false;
-
-            for (var key in vars) {
-                if (query.length == 0) {
-                    query += '?' + key + '=' + encodeURIComponent(vars[key]);
-                } else {
-                    query += '&' + key + '=' + encodeURIComponent(vars[key]);
-                }
-            }
-
-            var url = '/d2l/customization/pearsonlti/24467/Launch' + query;
-            (target == '_blank') ? window.open(url, '_blank'): location.replace(url);
+        function clicked(element, obj) {
+            //alert(element.className.includes('number') + " Has been clicked");
+            l2h(element.className);
         }
-    </script>
-    <script src="./LOMMEREGNER_files/MathML.js.download"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            D2LMathML.DesktopInit('https://s.brightspace.com/lib/mathjax/2.7.4/MathJax.js?config=MML_HTMLorMML', 'https://s.brightspace.com/lib/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML%2cSafe', '130', false);
-        });
-    </script>
-    <script>
-        window.addEventListener('message', function(event) {
-            if (!event.data) {
-                return;
-            }
-
-            var params;
-            try {
-                params = JSON.parse(event.data);
-            } catch {
-                return;
-            }
-            if (!params.subject || params.subject !== 'lti.frameResize') {
-                return;
-            }
-
-            const MAX_FRAME_HEIGHT = 10000
-            if (!params.height || params.height < 1 || params.height > MAX_FRAME_HEIGHT) {
-                console.warn('Invalid height value received, aborting');
-                return;
-            }
-            var el = document.getElementsByTagName('iframe');
-            for (var i = 0; i < el.length; i++) {
-                if (el[i].contentWindow === event.source) {
-                    el[i].style.height = params.height + 'px';
-                    el[i].style.width = '100%';
-                    console.info('Setting iFrame height to ' + params.height);
-                    console.info('Setting iFrame width to 100%');
-                }
-            }
-        });
     </script>
 </head>
 
 <body>
     <div class="lommeregner">
         <div id="display" class="display">0</div>
-        <div class="cell" onclick="clicked(&#39;MS&#39;);">MS</div>
-        <div class="cell" onclick="clicked(&#39;back&#39;);">←</div>
-        <div class="cell" onclick="clicked(&#39;C&#39;);">C</div>
-        <div class="cell" onclick="clicked(&#39;%&#39;);">%</div>
-        <div class="cell" onclick="clicked(&#39;/&#39;);">/</div>
-        <div class="cell" onclick="clicked(&#39;Mminus&#39;);">M-</div>
-        <div class="cell" onclick="clicked(7);">7</div>
-        <div class="cell" onclick="clicked(8);">8</div>
-        <div class="cell" onclick="clicked(9);">9</div>
-        <div class="cell" onclick="clicked(&#39;*&#39;);">X</div>
-        <div class="cell" onclick="clicked(&#39;Mplus&#39;);">M+</div>
-        <div class="cell" onclick="clicked(4);">4</div>
-        <div class="cell" onclick="clicked(5);">5</div>
-        <div class="cell" onclick="clicked(6);">6</div>
-        <div class="cell" onclick="clicked(&#39;-&#39;);">-</div>
-        <div class="cell" onclick="clicked(&#39;MR&#39;);">MR</div>
-        <div class="cell" onclick="clicked(1);">1</div>
-        <div class="cell" onclick="clicked(2);">2</div>
-        <div class="cell" onclick="clicked(3);">3</div>
-        <div class="cell" onclick="clicked(&#39;+&#39;);">+</div>
-        <div class="cell" onclick="clicked(&#39;MC&#39;);">MC</div>
-        <div class="cell" onclick="clicked(&#39;plus_minus&#39;);">±</div>
-        <div class="cell" onclick="clicked(0);">0</div>
-        <div class="cell" onclick="clicked(&#39;.&#39;);">.</div>
-        <div class="cell" onclick="clicked(&#39;=&#39;);">=</div>
+        <div class="cell memory" onclick="clicked(this, 'MS');">MS</div>
+        <div class="cell function" onclick="clicked(this, 'back');">←</div>
+        <div class="cell function" onclick="clicked(this, 'C');">C</div>
+        <div class="cell modifier" onclick="clicked(this, '%');">%</div>
+        <div class="cell operator" onclick="clicked(this, '/');">/</div>
+        <div class="cell memory" onclick="clicked(this, 'Mminus');">M-</div>
+        <div class="cell number" onclick="clicked(this, 7);">7</div>
+        <div class="cell number" onclick="clicked(this, 8);">8</div>
+        <div class="cell number" onclick="clicked(this, 9);">9</div>
+        <div class="cell operator" onclick="clicked(this, '*');">X</div>
+        <div class="cell memory" onclick="clicked(this, 'Mplus');">M+</div>
+        <div class="cell number" onclick="clicked(this, 4);">4</div>
+        <div class="cell number" onclick="clicked(this, 5);">5</div>
+        <div class="cell number" onclick="clicked(this, 6);">6</div>
+        <div class="cell operator" onclick="clicked(this, '-');">-</div>
+        <div class="cell memory" onclick="clicked(this, 'MR');">MR</div>
+        <div class="cell number" onclick="clicked(this, 1);">1</div>
+        <div class="cell number" onclick="clicked(this, 2);">2</div>
+        <div class="cell number" onclick="clicked(this, 3);">3</div>
+        <div class="cell operator" onclick="clicked(this, '+');">+</div>
+        <div class="cell memory" onclick="clicked(this, 'MC');">MC</div>
+        <div class="cell modifier" onclick="clicked(this, 'plus_minus');">±</div>
+        <div class="cell number" onclick="clicked(this, 0);">0</div>
+        <div class="cell modifier" onclick="clicked(this, '.');">.</div>
+        <div class="cell function" onclick="clicked(this, '=');">=</div>
     </div>
     <div class="history" id="history">
-        <center>History</center>
+        <p style="text-align:center;">History</p>
+        <div id="historycontent" style="width:100%; height:75%; overflow-y:scroll;">test</div>
 
     </div>
 
