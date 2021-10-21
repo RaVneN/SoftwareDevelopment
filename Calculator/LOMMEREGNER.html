@@ -28,6 +28,10 @@
             font-family: 'Consolas';
         }
         
+        .cell:hover {
+            cursor: pointer;
+        }
+        
         .lommeregner {
             position: absolute;
             left: 50%;
@@ -46,35 +50,25 @@
             width: 508px;
             height: 610px;
             border: 2px black solid;
-            font-size: 2.5em;
+            font-size: 1.5em;
             text-align: center;
             font-family: 'Consolas';
             text-align: right;
             overflow: hidden;
         }
+        
+        .history p {
+            height: 50px;
+        }
+        
+        .history div {
+            height: 512px;
+            width: 100%;
+            overflow-x: hidden;
+            overflow-y: visible;
+        }
     </style>
-    <script>
-        document.addEventListener('DOMContentLoaded',
-            function() {
-                clearAll();
-            });
-
-        function clearAll() {
-            document.getElementById('display').innerHTML = '0';
-            document.getElementById('historycontent').innerHTML = "";
-        }
-
-        function l2h(strText) {
-            document.getElementById("historycontent").innerHTML += strText + "<br/>";
-            document.getElementById("historycontent").scrollTop = document.getElementById("historycontent").scrollHeight;
-        }
-    </script>
-    <script>
-        function clicked(element, obj) {
-            //alert(element.className.includes('number') + " Has been clicked");
-            l2h(element.className);
-        }
-    </script>
+    <script src="calculator.js"></script>
 </head>
 
 <body>
@@ -108,11 +102,9 @@
     </div>
     <div class="history" id="history">
         <p style="text-align:center;">History</p>
-        <div id="historycontent" style="width:100%; height:75%; overflow-y:scroll;">test</div>
+        <div id="historycontent">test</div>
 
     </div>
-
-
 </body>
 
 </html>
