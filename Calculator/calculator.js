@@ -8,6 +8,7 @@ var operators = [];
 var operands = [];
 var tokens = [];
 
+
 function clicked(element, obj) {
     keyHistory.push(element);
     // l2h(element.className + " : " + element.innerHTML);
@@ -42,17 +43,17 @@ function clicked(element, obj) {
             keyFunction(element);
             break;
         default:
-            l2h("Unknown button pressed: " + element.innerHTML);
+            l2h("Unknown button pressed: " + element.innerHTML, "Warning");
             break;
     }
 }
 
 function keyNumber(element) {
-    addToDisplay(element.innerHTML);
+    if (display.isEditable()) { display.append(element.innerHTML); } else { display.clear(); display.append(element.innerHTML); }
 }
 
 function keyOperator(element) {
-    if (lastIsOperator()) { replaceLastWith(element.innerHTML) } else { addToDisplay(element.innerHTML) }
+    if (lastIsOperator()) { replaceLastWith(element.innerHTML) } else { display.setEditable(); addToDisplay(element.innerHTML) }
 }
 
 function keyModifier(element) {
@@ -66,12 +67,17 @@ function keyModifier(element) {
             let last = getLastSymbolOfDisplay();
             let parsed = parseInt(last);
 
-            if (isNaN(parsed)) { blink(element, "Red"); } else { addToDisplay("%"); }
-            l2h("last: " + last);
-            l2h("parsed: " + parsed);
+            if (display.isEditable()) {
+            if (isNaN(parsed)) { blink(element, "Red"); } else { display.append("%"); }
+            l2h("last: " + last, "Log");
+            l2h("parsed: " + parsed, "Log");
+            }
             break;
         case ".":
-            addToDisplay(".");
+            if (display.isEditable()) {
+                if (getLastSymbolOfDisplay() != "." && display.isEditable())
+                addToDisplay(".");
+            }
             break;
     }
 }
@@ -82,7 +88,7 @@ function keyMemory(element) {
         case "MS":
             //calculate sum of display, insert sum into memorycell
             if (calculate(element)) memorycell = parseFloat(display.innerHTML);
-
+            else blink(element, "Red");
             break;
         case "M-":
             //calculate sum of display, subtract sum from memorycell, store new sum in memorycell.
@@ -114,30 +120,26 @@ function keyMemory(element) {
 }
 
 function keyFunction(element) {
-    let display = document.getElementById("display");
+    //let display = document.getElementById("display");
     switch (element.innerHTML) {
         case "C":
-            l2h(display.innerHTML);
-            clearDisplay();
+            l2h(display.innerHTML(), "UI");
+            display.clear();
             clearMemory();
             break;
         case "←":
-            if (display.innerHTML.length == 1) {
-                clearDisplay();
-            } else {
-                display.innerHTML = display.innerHTML.slice(0, display.innerHTML.length - 1);
-            }
+            if (display.isEditable()){
+            display.deleteLast();
+            } else { display.clear(); }
             //Delete last symbol in display.
             //If only one symbol, replace with "0".
             break;
         case "=":
-            calculate(element);
-
+            if (calculate(element)) display.setReadOnly();
             break;
         default:
             break;
     }
-
 }
 
 
@@ -168,6 +170,8 @@ document.addEventListener('DOMContentLoaded',
     function() {
         clearAll();
     });
+//document.addEventListener('keypress', function (event){l2h(event.key + " : " + event.code, "Log");} )
+
 
 function clearAll() {
     clearDisplay();
@@ -187,9 +191,30 @@ function clearMemory() {
     memorycell = 0.0;
 }
 
-function l2h(strText) {
-    document.getElementById("historycontent").innerHTML += strText + "<br/>";
-    document.getElementById("historycontent").scrollTop = document.getElementById("historycontent").scrollHeight;
+function l2h(strText, priority) {
+    //Priority = Log, Warning, Error, UI
+    let history = document.getElementById("historycontent");
+    let span = document.createElement("span");
+    switch (priority) {
+        case "Log":
+            span.className = "log";
+            break;
+        case "Warning":
+            span.className = "warning";
+            break;
+        case "Error":
+            span.className = "error";
+            break;
+        case "UI":
+            span.className = "ui";
+            break;
+    }
+    span.appendChild(document.createTextNode(strText));
+    span.appendChild(document.createElement("br"));
+    history.appendChild(span);
+
+    //history.innerHTML += strText + "<br/>";
+    history.scrollTop = history.scrollHeight;
 }
 
 function blink(element, stringColor) {
@@ -210,19 +235,19 @@ function tokenize(strInput) {
     try {
         for (i = 0; i < strInput.length; i++) {
             if (symbols.includes(strInput[i])) {
-                l2h("In operands: " + strInput[i]);
+                l2h("In operands: " + strInput[i], "Log");
                 token_counter++;
                 tokens.push(strInput[i]);
                 token_counter++;
             } else {
-                l2h("In operators: " + strInput[i]);
+                l2h("In operators: " + strInput[i], "Log");
                 if (tokens.length == 0 || tokens.length <= token_counter) tokens.push(strInput[i]);
                 else tokens[token_counter] += strInput[i];
             }
         }
     } catch { return false; }
 
-    for (i = 0; i < tokens.length; i++) { l2h(tokens[i]); }
+    for (i = 0; i < tokens.length; i++) { l2h(tokens[i], "Log"); }
     return true;
 }
 
@@ -281,15 +306,57 @@ function replaceLastWith(symb) {
 function calculate(element) {
     let display = document.getElementById("display");
     if (!lastIsOperator()) {
-        l2h(display.innerHTML);
+        l2h(display.innerHTML, "UI");
         if (tokenize(display.innerHTML)) {
             handlePercentage();
             if (calculateTokens()) display.innerHTML = tokens[0];
 
-        } else { l2h("Something happened in Tokenizer"); }
+        } else { l2h("Something happened in Tokenizer","Error"); }
     } else { return false; }
     return true;
     //Copy content of display to History.
     //Calculate sum of display.
     //Replace content of display with calculated sum.
 }
+
+
+class Display {
+    constructor() {
+        this.element = document.getElementById("display");
+        this.displayState = true;
+    }
+
+    displayReady() { if (this.element == null) this.element = document.getElementById("display"); }
+
+    isEditable() { return this.displayState; }
+
+    isReadOnly() { return !this.displayState; }
+
+    setReadOnly() { this.displayState = false; }
+
+    setEditable() {this.displayState = true; }
+
+    append(stringElement) {
+        this.displayReady();
+        if (this.element.innerHTML == "0" && stringElement != "." && !symbols.includes(stringElement)) {
+            this.element.innerHTML = stringElement;
+        } else {
+            this.element.innerHTML += stringElement;
+        }
+    }
+
+    innerHTML() { return this.element.innerHTML; }
+
+    deleteLast() {
+        this.displayReady();
+        if (this.element.innerHTML.length == 1) {
+            clearDisplay();
+        } else {
+            this.element.innerHTML = this.element.innerHTML.slice(0, this.element.innerHTML.length - 1);
+        }
+    }
+
+    clear() { this.element.innerHTML = "0"; this.setEditable(); }
+
+}
+var display = new Display();
